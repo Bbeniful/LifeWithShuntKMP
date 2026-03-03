@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.composeConventionPlugin)
+    alias(libs.plugins.nav3ConventionPlugin)
 }
 
 kotlin {
@@ -55,7 +57,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(projects.feature.symptom.api.nav)
+                implementation(projects.feature.symptom.impl.domain)
             }
         }
 

@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.ktorConventionPlugin)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -58,6 +61,11 @@ kotlin {
                 implementation(projects.core.domain)
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.coroutines.core)
+
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.androidx.sqlite.bundled)
+                implementation(libs.kotlinx.datetime)
+
             }
         }
 
@@ -70,6 +78,8 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.play.services.location)
+                implementation(libs.androidx.room.sqlite.wrapper)
+
             }
         }
 
@@ -91,5 +101,14 @@ kotlin {
             }
         }
     }
+}
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
 }
