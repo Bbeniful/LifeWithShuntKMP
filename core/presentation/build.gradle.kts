@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.nav3WithKoinConventionPlugin)
+    alias(libs.plugins.composeConventionPlugin)
 }
 
 kotlin {
@@ -55,7 +56,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(projects.feature.home.api.nav)
+                implementation(projects.feature.symptom.api.nav)
             }
         }
 
@@ -78,6 +80,8 @@ kotlin {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.testExt.junit)
+                implementation(projects.feature.home.api.nav)
+                implementation(projects.feature.symptom.api.nav)
             }
         }
 
@@ -90,6 +94,11 @@ kotlin {
                 // KMP dependencies declared in commonMain.
             }
         }
+    }
+
+    androidLibrary {
+        // needed so compose-resources from this module are packaged for Android
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
 }

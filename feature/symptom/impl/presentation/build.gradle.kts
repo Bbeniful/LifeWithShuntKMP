@@ -57,6 +57,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(projects.core.domain)
+                implementation(projects.core.presentation)
                 implementation(projects.feature.symptom.api.nav)
                 implementation(projects.feature.symptom.impl.domain)
             }
@@ -93,6 +95,11 @@ kotlin {
                 // KMP dependencies declared in commonMain.
             }
         }
+    }
+
+    androidLibrary {
+        // needed so compose-resources from this module are packaged for Android
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
 }
