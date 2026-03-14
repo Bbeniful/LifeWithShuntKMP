@@ -63,13 +63,13 @@ fun PainIntensitySlider(
             text = "How is your pain?",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A237E)
+                color = Color.White
             )
         )
         Text(
             text = "Slide to indicate intensity",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
+            color = Color.White.copy(alpha = 0.6f),
             modifier = Modifier.padding(bottom = 32.dp)
         )
 

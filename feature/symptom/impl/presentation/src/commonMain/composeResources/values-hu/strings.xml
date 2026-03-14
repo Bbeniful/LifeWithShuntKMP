@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="symptom_nausea">Hányinger</string>
+    <string name="symptom_dizziness">Dizziness</string>
+    <string name="symptom_lethargy">Lethargy</string>
+    <string name="symptom_vision">Vision</string>
+    <string name="symptom_headache">Headache</string>
+    <string name="symptom_tingling">Tingling</string>
+    <string name="symptom_title">Other Symptoms</string>
+
+    <string name="none">None</string>
 </resources>

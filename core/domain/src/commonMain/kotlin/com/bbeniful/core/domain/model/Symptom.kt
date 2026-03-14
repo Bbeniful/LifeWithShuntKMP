@@ -8,11 +8,11 @@ data class Symptom(
 )
 
 enum class SymptomName(val value: String) {
-    Nausea(""),
-    Dizziness(""),
-    Lethargy(""),
-    Vision(""),
-    Headache(""),
-    Tingling(""),
+    Nausea("Nausea"),
+    Dizziness("Dizziness"),
+    Lethargy("Lethargy"),
+    Vision("Vision"),
+    Headache("Headache"),
+    Tingling("Tingling"),
     None("")
 }
