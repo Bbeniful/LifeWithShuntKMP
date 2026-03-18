@@ -101,7 +101,7 @@ internal fun WeatherData(weather: DisplayWeather, onRefresh: () -> Unit = {}) {
             )
 
             Text(
-                text = "${weather?.frontType?.name}",
+                text = "${weather.frontType?.name}",
                 color = Color.White,
                 fontSize = 18.sp
             )
