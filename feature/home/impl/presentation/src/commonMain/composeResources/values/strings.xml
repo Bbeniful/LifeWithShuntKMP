@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="welcome_user">Welcome</string>
+    <string name="log_symptom">Log Symptom</string>
+    <string name="add_water">Add water</string>
+    <string name="recent_activities">Recent Activities</string>
+</resources>

@@ -9,7 +9,7 @@ interface SymptomDataSource {
 
     suspend fun remove(symptom: SymptomEntity)
 
-    fun getAllSymptom(): List<SymptomEntity>
+   suspend fun getAllSymptom(): List<SymptomEntity>
 }
 
 class SymptomDataSourceImpl(
@@ -20,6 +20,6 @@ class SymptomDataSourceImpl(
 
     override suspend fun remove(symptom: SymptomEntity) = symptomDao.remove(symptom = symptom)
 
-    override fun getAllSymptom() = symptomDao.getAllSymptom()
+    override suspend fun getAllSymptom() = symptomDao.getAllSymptom()
 
 }

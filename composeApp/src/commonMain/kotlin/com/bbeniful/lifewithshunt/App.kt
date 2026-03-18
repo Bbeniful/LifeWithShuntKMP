@@ -18,6 +18,8 @@ import com.bbeniful.core.di.appModule
 import com.bbeniful.core.di.dataModule
 import com.bbeniful.core.di.navigatorModule
 import com.bbeniful.core.presentation.KoinAppContainer
+import com.bbeniful.di.module.weatherModule
+import com.bbeniful.feature.home.di.homeModule
 import com.bbeniful.feature.home.di.homeNavModule
 import com.bbeniful.feature.symptom.di.symptomNavigationModule
 import org.jetbrains.compose.resources.painterResource
@@ -31,9 +33,11 @@ private val modules = module {
     includes(
         appModule,
         navigatorModule,
+        weatherModule,
+        homeModule,
         homeNavModule,
         dataModule,
-        symptomNavigationModule
+        symptomNavigationModule,
     )
 }
 

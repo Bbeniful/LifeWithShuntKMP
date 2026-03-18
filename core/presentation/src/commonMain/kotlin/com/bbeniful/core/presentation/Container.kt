@@ -33,6 +33,7 @@ fun KoinAppContainer(initialModules: () -> Module) {
             ) { innerPadding ->
                 Box(modifier = Modifier.fillMaxSize()
                     .padding(innerPadding)) {
+
                     val navigator = koinInject<Navigator>()
                     val entries = koinEntryProvider<Any>()
 

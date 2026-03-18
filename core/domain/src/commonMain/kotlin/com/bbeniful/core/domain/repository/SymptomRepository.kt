@@ -6,9 +6,9 @@ interface SymptomRepository {
 
     suspend fun add(symptom: Symptom)
 
-    fun getLastSymptom(): Symptom
+    suspend fun getLastSymptom(): Symptom
 
     suspend fun remove(symptom: Symptom)
 
-    fun getAllSymptom(): List<Symptom>
+    suspend fun getAllSymptom(): List<Symptom>
 }

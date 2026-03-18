@@ -15,5 +15,5 @@ interface SymptomDao {
     suspend fun remove(symptom: SymptomEntity)
 
     @Query("Select * From symptomentity")
-    fun getAllSymptom(): List<SymptomEntity>
+   suspend fun getAllSymptom(): List<SymptomEntity>
 }

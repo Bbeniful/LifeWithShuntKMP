@@ -23,7 +23,7 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     @SuppressLint("MissingPermission")
     override fun getLocationUpdates(): Flow<LocationData?> = callbackFlow {
         val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY, 1.minutes.inWholeMilliseconds
+            Priority.PRIORITY_HIGH_ACCURACY, 30.seconds.inWholeMilliseconds
         ).build()
 
         val callback = object : LocationCallback() {

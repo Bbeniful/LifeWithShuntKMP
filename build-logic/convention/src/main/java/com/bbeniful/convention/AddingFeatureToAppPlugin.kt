@@ -32,7 +32,8 @@ class AddingFeatureToAppPlugin : Plugin<Project> {
                         // Weather
                         implementation(featureApi("weather", "nav"))
                         //implementation(feature("weather", "impl", "data"))
-                        //implementation(feature("weather", "impl", "domain"))
+                        /*TMP*/
+                        implementation(feature("weather", "impl", "domain"))
                         implementation(feature("weather", "impl", "presentation"))
                         implementation(featureDi("weather"))
 

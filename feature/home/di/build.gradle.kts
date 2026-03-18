@@ -57,10 +57,12 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(projects.core.domain)
                 implementation(projects.feature.home.api.nav)
                 implementation(projects.feature.home.impl.data)
                 implementation(projects.feature.home.impl.domain)
                 implementation(projects.feature.home.impl.presentation)
+                implementation(libs.koin.compose.viewmodel)
             }
         }
 
@@ -72,9 +74,7 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                implementation(libs.koin.android)
             }
         }
 

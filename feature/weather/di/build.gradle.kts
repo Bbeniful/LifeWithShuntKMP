@@ -55,8 +55,25 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(projects.core.domain)
+                implementation(projects.feature.weather.api.domain)
+                implementation(projects.feature.weather.impl.domain)
+                implementation(projects.feature.weather.impl.data)
+                implementation(projects.feature.weather.impl.presentation)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.koin.core)
+                implementation(project.dependencies.platform(libs.koin.bom))
             }
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
 
         commonTest {

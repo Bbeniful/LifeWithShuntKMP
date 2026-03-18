@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -40,13 +43,16 @@ fun SymptomScreen(backstack: SnapshotStateList<Any>) {
 
     val symptomState = rememberSymptomCardState()
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Colors.Background)
+            .verticalScroll(scrollState)
             .padding(horizontal = 20.dp)
     ) {
         SliderComponent()
-        Symptoms(
+        SymptomsN(
             symptomList = symptomState.getSymptomUIs(),
             selectedSymptoms = symptomState.selectedSymptoms
         ) {
@@ -85,6 +91,48 @@ internal fun Symptoms(
                     isSelected = symptom in selectedSymptoms
                 )
             }
+        }
+    }
+}
+
+@Composable
+internal fun SymptomsN(
+    symptomList: List<SymptomUI>,
+    selectedSymptoms: List<SymptomUI>,
+    onSymptomClick: (SymptomUI) -> Unit
+) {
+    Column {
+        Text(
+            text = stringResource(Res.string.symptom_title),
+            color = Color.White,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        val rows = symptomList.chunked(2)
+
+        rows.forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                rowItems.forEach { symptom ->
+                    SymptomCard(
+                        modifier = Modifier
+                            .weight(1f) // Ensures items take equal width
+                            .clickable { onSymptomClick(symptom) },
+                        icon = symptom.icon,
+                        title = symptom.title,
+                        isSelected = symptom in selectedSymptoms
+                    )
+                }
+
+                // If a row has only 1 item, add a Spacer to keep alignment
+                if (rowItems.size < 2) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+            Spacer(modifier = Modifier.height(15.dp)) // Vertical spacing
         }
     }
 }

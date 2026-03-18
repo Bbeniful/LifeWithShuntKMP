@@ -11,10 +11,10 @@ class SymptomRepositoryImpl(
 ) : SymptomRepository {
     override suspend fun add(symptom: Symptom) = symptomDataSource.add(symptom = symptom.toData)
 
-    override fun getLastSymptom() = symptomDataSource.getAllSymptom().last().toDomain
+    override suspend fun getLastSymptom() = symptomDataSource.getAllSymptom().last().toDomain
 
     override suspend fun remove(symptom: Symptom) =
         symptomDataSource.remove(symptom = symptom.toData)
 
-    override fun getAllSymptom() = symptomDataSource.getAllSymptom().map { it.toDomain }
+    override suspend fun getAllSymptom() = symptomDataSource.getAllSymptom().map { it.toDomain }
 }
