@@ -29,13 +29,21 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
         val callback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let {
-                    Log.e("Location", "Location: ${it.latitude}, ${it.longitude}")
-                    trySend(LocationData(it.latitude, it.longitude, it.accuracy, it.altitude))
+                  //  Log.e("Location", "Location: ${it.latitude}, ${it.longitude}")
+                  //  trySend(LocationData(it.latitude, it.longitude, it.accuracy, it.altitude))
                 }
             }
         }
 
         val last = fusedLocationClient.lastLocation
+        last.addOnSuccessListener {
+            trySend(LocationData(it.latitude, it.longitude, it.accuracy, it.altitude))
+        }
+
+        last.addOnFailureListener {
+            trySend(null)
+
+        }
 
         fusedLocationClient.requestLocationUpdates(
             locationRequest,

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bbeniful.core.domain.usecase.GetLocationUseCase
+import com.bbeniful.feature.home.presentation.component.WeatherCard
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -30,17 +31,17 @@ fun HomeScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            Text(
-                text = "${state.currentWeather?.currentCelsius}",
-                color = Color.White
-            )
-            Text(
-                text = "${state.currentWeather?.frontType?.name}",
-                color = Color.White
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            WeatherCard(
+                weather = state.currentWeather,
+                onRefresh = {
+                    viewModel.getWeather()
+                }
             )
         }
     }

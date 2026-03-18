@@ -53,7 +53,6 @@ fun DailyDto.toDomainForecast(
 ): List<DailyWeather> {
     return time.indices.map { index ->
         val date = time[index]
-
         DailyWeather(
             dateIso = date,
             minTemperatureCelsius = temperature_2m_min[index],
@@ -124,7 +123,7 @@ fun Double.toWeatherFront(): WeatherFront {
     }
 }
 
-fun Int.toWeatherDescription(): String {
+fun Int?.toWeatherDescription(): String {
     return when (this) {
         0 -> "Clear sky"
         1, 2, 3 -> "Partly cloudy"

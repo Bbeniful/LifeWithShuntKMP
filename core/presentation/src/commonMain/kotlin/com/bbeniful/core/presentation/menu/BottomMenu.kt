@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bbeniful.core.presentation.extension.noRippleClickable
 import com.bbeniful.core.presentation.token.Colors
 import com.bbeniful.feature.api.nav.SymptomNavRoute
 import com.bbeniful.nav.HomeRoute
@@ -114,10 +115,7 @@ private fun BottomMenuItem(
     Column(
         modifier = Modifier
             .height(120.dp)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
+            .noRippleClickable {
                 onClick(item)
             },
         horizontalAlignment = Alignment.CenterHorizontally,

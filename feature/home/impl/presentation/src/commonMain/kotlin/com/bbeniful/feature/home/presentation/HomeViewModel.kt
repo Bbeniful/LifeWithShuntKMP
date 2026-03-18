@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class HomeViewModel(
     private val getWeatherUseCase: GetWeatherUseCase,
@@ -21,18 +23,20 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState = _uiState.asStateFlow()
 
-    fun getWeather() {
+    fun getWeather(isRefreshing: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             getLocationUseCase().collectLatest { location ->
                 if (location == null) {
                     updateError(error = "Cannot load Location")
                     return@collectLatest
                 }
+                updateWeatherLoading(isLoading = true)
 
                 getWeatherUseCase(
                     longitude = location.longitude,
                     latitude = location.latitude
                 ).run {
+                    updateWeatherLoading(isLoading = false)
                     updateWeather(this)
                 }
             }
@@ -47,15 +51,30 @@ class HomeViewModel(
         }
     }
 
-    private fun updateWeather(weather: Weather) {
+    private fun updateWeatherLoading(isLoading: Boolean) {
         _uiState.update {
             it.copy(
                 currentWeather = DisplayWeather(
-                    currentCelsius = weather.current.temperatureCelsius.toString(),
-                    frontType = weather.current.weatherFront
+                    isLoading = isLoading
                 )
             )
         }
     }
 
+    private fun refreshing(): Boolean {
+        return false
+    }
+
+    private fun updateWeather(weather: Weather) {
+        _uiState.update {
+            it.copy(
+                currentWeather = DisplayWeather(
+                    currentCelsius = ceil(weather.current.temperatureCelsius).toInt().toString(),
+                    frontType = weather.current.weatherFront,
+                    weatherCode = weather.current.weatherCode,
+                    weatherTitle = weather.current.description ?: "Unknown"
+                )
+            )
+        }
+    }
 }

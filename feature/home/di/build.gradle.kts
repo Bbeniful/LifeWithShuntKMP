@@ -62,6 +62,7 @@ kotlin {
                 implementation(projects.feature.home.impl.data)
                 implementation(projects.feature.home.impl.domain)
                 implementation(projects.feature.home.impl.presentation)
+                implementation(projects.feature.weather.api.domain)
                 implementation(libs.koin.compose.viewmodel)
             }
         }
