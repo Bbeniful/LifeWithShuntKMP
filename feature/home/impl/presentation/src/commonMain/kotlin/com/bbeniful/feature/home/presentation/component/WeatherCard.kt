@@ -73,7 +73,7 @@ internal fun LoadingWeather() {
 internal fun WeatherData(weather: DisplayWeather, onRefresh: () -> Unit = {}) {
     Row(
         modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 15.dp),
+            .padding(horizontal = 0.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

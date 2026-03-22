@@ -33,12 +33,12 @@ class WeatherDataSourceImpl(
 
             parameter(
                 "current",
-                "temperature_2m,apparent_temperature,pressure_msl,weather_code"
+                "temperature_2m,apparent_temperature,pressure_msl,weather_code,wind_speed_10m,cloud_cover"
             )
 
             parameter(
                 "hourly",
-                "pressure_msl"
+                "pressure_msl,temperature_2m,wind_speed_10m,cloud_cover"
             )
 
             parameter(

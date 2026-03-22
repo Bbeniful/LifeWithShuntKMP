@@ -11,13 +11,8 @@ import com.bbeniful.core.domain.model.Weather
 import kotlin.math.abs
 
 fun OpenMeteoResponse.toDomain(): Weather {
-    val currentWeather = current.toDomain(
-        hourly = hourly
-    )
-
-    val dailyForecast = daily.toDomainForecast(
-        hourly = hourly
-    )
+    val currentWeather = current.toDomain(hourly = hourly)
+    val dailyForecast = daily.toDomainForecast(hourly = hourly)
 
     return Weather(
         current = currentWeather,
@@ -28,19 +23,15 @@ fun OpenMeteoResponse.toDomain(): Weather {
     )
 }
 
-fun CurrentDto.toDomain(
-    hourly: HourlyDto
-): CurrentWeather {
-    val weatherFront = hourly.calculateWeatherFront(
-        currentTime = time
-    )
+fun CurrentDto.toDomain(hourly: HourlyDto): CurrentWeather {
+    val weatherFront = hourly.calculateWeatherFront(currentTime = time)
 
     return CurrentWeather(
         temperatureCelsius = temperature_2m,
         apparentTemperatureCelsius = apparent_temperature,
         weatherCode = weather_code,
         humidityPercent = null,
-        windSpeedKmH = null,
+        windSpeedKmH = wind_speed_10m,
         pressureHpa = pressure_msl,
         weatherFront = weatherFront,
         description = weather_code.toWeatherDescription(),
@@ -48,9 +39,7 @@ fun CurrentDto.toDomain(
     )
 }
 
-fun DailyDto.toDomainForecast(
-    hourly: HourlyDto
-): List<DailyWeather> {
+fun DailyDto.toDomainForecast(hourly: HourlyDto): List<DailyWeather> {
     return time.indices.map { index ->
         val date = time[index]
         DailyWeather(
@@ -65,62 +54,136 @@ fun DailyDto.toDomainForecast(
     }
 }
 
+private fun List<Double>.maxChangeInWindow(windowSize: Int): Double {
+    if (size < windowSize) return 0.0
+    return windowed(windowSize).maxOf { window ->
+        abs(window.last() - window.first())
+    }
+}
+
+private fun HourlyDto.valuesForDate(
+    dateIso: String,
+    source: List<Double>
+): List<Double> {
+    return time.indices
+        .filter { time[it].startsWith(dateIso) }
+        .mapNotNull { source.getOrNull(it) }
+}
+
+fun HourlyDto.calculateWeatherFrontForDate(dateIso: String): WeatherFront {
+    val pressures = valuesForDate(dateIso, pressure_msl)
+    val temps = valuesForDate(dateIso, temperature_2m)
+    val winds = valuesForDate(dateIso, wind_speed_10m)
+    val clouds = valuesForDate(dateIso, cloud_cover)
+
+    if (pressures.size < 4) return WeatherFront.None
+
+    return compositeScore(pressures, temps, winds, clouds)
+}
+
 fun HourlyDto.calculateWeatherFront(
     currentTime: String
 ): WeatherFront {
-    val currentIndex = time.indexOf(currentTime)
-
-    if (currentIndex == -1) return WeatherFront.Low
-
-    val currentPressure = pressure_msl.getOrNull(currentIndex) ?: return WeatherFront.Low
-    val pressure3hAgo = pressure_msl.getOrNull(currentIndex - 3)
-    val pressure6hAgo = pressure_msl.getOrNull(currentIndex - 6)
-
-    val delta3h = pressure3hAgo?.let { currentPressure - it }
-    val delta6h = pressure6hAgo?.let { currentPressure - it }
-
-    val maxChange = listOfNotNull(
-        delta3h?.let(::abs),
-        delta6h?.let(::abs)
-    ).maxOrNull() ?: 0.0
-
-    return maxChange.toWeatherFront()
-}
-
-fun HourlyDto.calculateWeatherFrontForDate(
-    dateIso: String
-): WeatherFront {
-    val pressuresForDate = time.indices
-        .filter { index -> time[index].startsWith(dateIso) }
-        .mapNotNull { index -> pressure_msl.getOrNull(index) }
-
-    if (pressuresForDate.size < 2) return WeatherFront.Low
-
-    val minPressure = pressuresForDate.minOrNull() ?: return WeatherFront.Low
-    val maxPressure = pressuresForDate.maxOrNull() ?: return WeatherFront.Low
-    val change = abs(maxPressure - minPressure)
-
-    return change.toWeatherFront()
-}
-
-fun HourlyDto.averagePressureForDate(
-    dateIso: String
-): Double? {
-    val pressuresForDate = time.indices
-        .filter { index -> time[index].startsWith(dateIso) }
-        .mapNotNull { index -> pressure_msl.getOrNull(index) }
-
-    if (pressuresForDate.isEmpty()) return null
-
-    return pressuresForDate.average()
-}
-
-fun Double.toWeatherFront(): WeatherFront {
-    return when {
-        this >= 6.0 -> WeatherFront.High
-        this >= 3.0 -> WeatherFront.Medium
-        else -> WeatherFront.Low
+    val currentIndex = time.indexOfLast {
+        it.startsWith(currentTime.substringBefore(":"))
     }
+    if (currentIndex == -1) return WeatherFront.None
+
+    val rangeStart = (currentIndex - 12).coerceAtLeast(0)
+    val range = rangeStart..currentIndex
+
+    val pressures = range.mapNotNull { pressure_msl.getOrNull(it) }
+    val temps = range.mapNotNull { temperature_2m.getOrNull(it) }
+    val winds = range.mapNotNull { wind_speed_10m.getOrNull(it) }
+    val clouds = range.mapNotNull { cloud_cover.getOrNull(it) }
+
+    if (pressures.size < 4) {
+        val todayIso = currentTime.substringBefore("T")
+        println("DEBUG fallback to date: $todayIso")
+        val result = calculateWeatherFrontForDate(todayIso)
+        println("DEBUG fallback result: $result")
+        return result
+    }
+
+    return compositeScore(pressures, temps, winds, clouds)
+}
+
+
+private fun compositeScore(
+    pressures: List<Double>,
+    temps: List<Double>,
+    winds: List<Double>,
+    clouds: List<Double>
+): WeatherFront {
+/*
+    println("DEBUG compositeScore: p=${pressures.size} t=${temps.size} w=${winds.size} c=${clouds.size}")
+    println("DEBUG clouds=$clouds")*/
+    val pressure3h = pressures.maxChangeInWindow(4)
+    val pressure6h = pressures.maxChangeInWindow(7)
+    val tempMaxJump = temps.maxHourlyJump()
+    val windMaxJump = winds.maxHourlyJump()
+    val cloud3h = clouds.maxChangeInWindow(4)
+    val cloud6h = clouds.maxChangeInWindow(7)
+
+    var score = 0.0
+
+    val pressureScore = when {
+        pressure3h >= 4.0 || pressure6h >= 8.0 -> 3.0
+        pressure3h >= 2.5 || pressure6h >= 5.0 -> 2.0
+        pressure3h >= 1.0 || pressure6h >= 2.0 -> 1.0
+        else -> 0.0
+    }
+    score += pressureScore
+
+    val tempScore = when {
+        tempMaxJump >= 3.5 -> 2.0
+        tempMaxJump >= 2.5 -> 1.5
+        tempMaxJump >= 1.5 -> 0.5
+        else -> 0.0
+    }
+    score += tempScore
+
+    score += when {
+        windMaxJump >= 10.0 -> 2.0
+        windMaxJump >= 7.0  -> 1.5
+        windMaxJump >= 5.0  -> 0.5
+        else -> 0.0
+    }
+
+    val hasPrimarySignal = pressureScore >= 1.0 && tempScore >= 1.5
+    score += if (hasPrimarySignal) {
+        when {
+            cloud3h >= 60.0 || cloud6h >= 70.0 -> 1.5
+            cloud3h >= 40.0 || cloud6h >= 50.0 -> 1.0
+            cloud3h >= 25.0 || cloud6h >= 30.0 -> 0.5
+            else -> 0.0
+        }
+    } else {
+        if (cloud3h >= 60.0 || cloud6h >= 70.0) 0.5 else 0.0
+    }
+
+    return score.toWeatherFront()
+}
+
+private fun List<Double>.maxHourlyJump(): Double {
+    if (size < 2) return 0.0
+    return zipWithNext { a, b -> abs(b - a) }.max()
+}
+
+private fun Double.toWeatherFront(): WeatherFront {
+    return when {
+        this >= 6.0 -> WeatherFront.Severe
+        this >= 4.0 -> WeatherFront.Strong
+        this >= 2.5 -> WeatherFront.Moderate
+        this >= 1.0 -> WeatherFront.Weak
+        else -> WeatherFront.None
+    }
+}
+
+fun HourlyDto.averagePressureForDate(dateIso: String): Double? {
+    val pressures = valuesForDate(dateIso, pressure_msl)
+    if (pressures.isEmpty()) return null
+    return pressures.average()
 }
 
 fun Int?.toWeatherDescription(): String {

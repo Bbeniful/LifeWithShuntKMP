@@ -18,13 +18,18 @@ data class CurrentDto(
     val temperature_2m: Double,
     val apparent_temperature: Double,
     val pressure_msl: Double,
-    val weather_code: Int
+    val weather_code: Int,
+    val wind_speed_10m: Double,
+    val cloud_cover: Double
 )
 
 @Serializable
 data class HourlyDto(
     val time: List<String>,
-    val pressure_msl: List<Double>
+    val pressure_msl: List<Double>,
+    val temperature_2m: List<Double>,
+    val wind_speed_10m: List<Double>,
+    val cloud_cover: List<Double>
 )
 
 @Serializable

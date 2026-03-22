@@ -1,5 +1,9 @@
 package com.bbeniful.core.domain.model
 
 enum class WeatherFront {
-    Low, Medium, High, None
+    None,           // nincs fronthatás
+    Weak,           // gyenge, alig érezhető
+    Moderate,       // mérsékelt, érzékenyeknél tünetek
+    Strong,         // erős fronthatás
+    Severe          // kettősfront / nagyon erős
 }

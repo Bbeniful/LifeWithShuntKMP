@@ -37,7 +37,9 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 
         val last = fusedLocationClient.lastLocation
         last.addOnSuccessListener {
-            trySend(LocationData(it.latitude, it.longitude, it.accuracy, it.altitude))
+            if (it != null) {
+                trySend(LocationData(it.latitude, it.longitude, it.accuracy, it.altitude))
+            }
         }
 
         last.addOnFailureListener {

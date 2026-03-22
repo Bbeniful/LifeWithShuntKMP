@@ -65,6 +65,7 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.koin.core)
                 implementation(project.dependencies.platform(libs.koin.bom))
+                implementation("io.ktor:ktor-client-logging:3.4.1")
             }
         }
 
