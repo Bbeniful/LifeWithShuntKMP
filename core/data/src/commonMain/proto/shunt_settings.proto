@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message ShuntSettings {
+  string manufacture = 1;
+  string model = 2;
+  double current_pressure = 3;
+  string last_modified_date = 4;
+}

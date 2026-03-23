@@ -62,6 +62,7 @@ kotlin {
 
                 implementation(libs.koin.core)
                 implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.datastore.core.okio)
             }
         }
 
